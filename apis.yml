@@ -1,18 +1,45 @@
 aid: pgvector
 name: pgvector
-description: 'pgvector is a company surfaced via the API Evangelist harvest backlog (source: self-hosted-agent-stack)
-  and added to the network as a stub for full-pipeline profiling.'
+description: >-
+  pgvector is an open-source PostgreSQL extension for vector similarity search,
+  created and maintained by Andrew Kane. It adds vector, halfvec and sparsevec data
+  types, six distance operators (L2, inner product, cosine, L1, Hamming, Jaccard) and
+  two approximate-nearest-neighbour index access methods (HNSW and IVFFlat) to a
+  Postgres server, so embeddings live beside the rest of an application's data with
+  full ACID semantics, JOINs, point-in-time recovery and existing backup and
+  replication tooling. It is not a service and exposes no HTTP API: the interface is
+  SQL, the contract is the extension's own installation DDL, and consumers reach it
+  through an ordinary Postgres driver. The project also publishes first-party client
+  libraries for seventeen languages, which handle vector encoding for each language's
+  Postgres driver.
+image: https://avatars.githubusercontent.com/u/98363230?v=4
 url: https://raw.githubusercontent.com/api-evangelist/pgvector/refs/heads/main/apis.yml
 x-type: company
 x-source: harvest:self-hosted-agent-stack
-x-tier: stub
-x-tier-reason: harvest
+x-tier: profiled
+x-tier-reason: enrichment-pass-2026-08-27
 specificationVersion: '0.20'
 created: '2026-08-27'
 modified: '2026-08-27'
 tags:
+- Artificial Intelligence
+- Vector Databases
+- Databases
+- Open Source
+- PostgreSQL
+- Search
+- Embeddings
+- Extensions
 - Company
 apis: []
+x-apis-note: >-
+  Deliberately empty. pgvector exposes no HTTP, GraphQL, gRPC or SOAP API and
+  therefore has no baseURL to record; repair-api-bases.py returned `missing` on
+  2026-08-27 because no source names an API host, which is the correct result rather
+  than a defect to repair. Its machine-readable contract is the extension DDL at
+  sql/vector.sql, captured under data-model/ and described in
+  data-model/pgvector-data-model.yml. Inventing an apis[] entry with a fabricated base
+  URL would misrepresent the project.
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
@@ -21,3 +48,122 @@ maintainers:
 common:
 - type: Website
   url: https://github.com/pgvector/pgvector
+- type: SourceCode
+  url: https://github.com/pgvector/pgvector
+- type: GitHubOrganization
+  url: https://github.com/pgvector
+- type: Documentation
+  url: https://github.com/pgvector/pgvector#readme
+- type: APIReference
+  url: https://github.com/pgvector/pgvector#reference
+- type: GettingStarted
+  url: https://github.com/pgvector/pgvector#getting-started
+- type: Support
+  url: https://github.com/pgvector/pgvector/issues
+- type: ChangeLog
+  url: https://github.com/pgvector/pgvector/blob/master/CHANGELOG.md
+- type: License
+  url: https://github.com/pgvector/pgvector/blob/master/LICENSE
+- type: Packages
+  url: packages/pgvector-packages.yml
+- type: SDKs
+  url: packages/pgvector-packages.yml
+- type: ChangeLog
+  url: changelog/pgvector-changelog.yml
+- type: Lifecycle
+  url: lifecycle/pgvector-lifecycle.yml
+- type: DataModel
+  url: data-model/pgvector-data-model.yml
+- type: Conventions
+  url: conventions/pgvector-conventions.yml
+- type: ErrorCatalog
+  url: errors/pgvector-problem-types.yml
+- type: Conformance
+  url: conformance/pgvector-conformance.yml
+- type: Plans
+  url: plans/pgvector-plans-pricing.yml
+- type: LLMsTxt
+  url: llms/pgvector-llms.txt
+- type: AgentSkill
+  url: skills/_index.yml
+x-pointer-verification:
+  checked: '2026-08-27'
+  method: probed
+  note: >-
+    Every external pointer above was fetched with a browser User-Agent on 2026-08-27.
+    All returned HTTP 200. No dead pointers were found and none were removed.
+  results:
+  - url: https://github.com/pgvector/pgvector
+    status: 200
+  - url: https://github.com/pgvector
+    status: 200
+  - url: https://github.com/pgvector/pgvector#readme
+    status: 200
+  - url: https://github.com/pgvector/pgvector#reference
+    status: 200
+  - url: https://github.com/pgvector/pgvector#getting-started
+    status: 200
+  - url: https://github.com/pgvector/pgvector/issues
+    status: 200
+  - url: https://github.com/pgvector/pgvector/blob/master/CHANGELOG.md
+    status: 200
+  - url: https://github.com/pgvector/pgvector/blob/master/LICENSE
+    status: 200
+  - url: https://avatars.githubusercontent.com/u/98363230?v=4
+    status: 200
+x-contract-discovery:
+  checked: '2026-08-27'
+  outcome: sql-ddl-only
+  note: >-
+    STEP 0b was run in full against every host the project could plausibly control.
+    No OpenAPI, Swagger, GraphQL SDL, AsyncAPI, Protobuf, WSDL, MCP endpoint or A2A
+    agent card exists, and none is applicable to a PostgreSQL extension. The real
+    machine-readable contract was found and captured: sql/vector.sql, declaring 3
+    types, 2 access methods, 114 functions, 64 operators, 24 operator classes, 2
+    aggregates and 23 casts.
+  probes:
+  - url: https://raw.githubusercontent.com/pgvector/pgvector/master/sql/vector.sql
+    status: 200
+    finding: The extension DDL. Saved verbatim to data-model/pgvector-vector.sql.
+  - url: https://raw.githubusercontent.com/pgvector/pgvector/master/openapi.json
+    status: 404
+  - url: https://raw.githubusercontent.com/pgvector/pgvector/master/llms.txt
+    status: 404
+  - url: https://raw.githubusercontent.com/pgvector/pgvector/master/AGENTS.md
+    status: 404
+  - url: https://raw.githubusercontent.com/pgvector/pgvector/master/SECURITY.md
+    status: 404
+  - url: https://github.com/.well-known/agent-card.json
+    status: 404
+  - url: https://pgvector.dev/
+    status: 302
+    finding: >-
+      Not the project's domain. Redirects to github.com/supabase-community/chatgpt-your-files.
+      Nothing served from it was attributed to pgvector.
+  - url: https://pgvector.com/
+    status: null
+    finding: No DNS resolution.
+  - url: https://pgvector.org/
+    status: null
+    finding: No DNS resolution.
+x-enrichment:
+  date: '2026-08-27'
+  status: enriched
+  artifacts_added: 15
+  pass: local-v1
+x-coverage:
+  state: covered
+  detail: >-
+    pgvector is a PostgreSQL extension, not a service. Its contract is the SQL DDL the
+    server executes at CREATE EXTENSION time, which was found, fetched and captured;
+    the absence of an OpenAPI is inapplicability, not an omission. The one genuine gap
+    in the project's own posture is the missing SECURITY.md - probed 404 on both the
+    repository and the organization .github repository - which leaves no published
+    coordinated disclosure channel for a project whose last three releases each fixed
+    a memory-safety or index-corruption defect running inside the database backend.
+  evidence:
+  - url: https://raw.githubusercontent.com/pgvector/pgvector/master/sql/vector.sql
+    status: 200
+  - url: https://raw.githubusercontent.com/pgvector/pgvector/master/SECURITY.md
+    status: 404
+  checked: '2026-08-27'
