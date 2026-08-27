@@ -1,0 +1,23 @@
+aid: pgvector
+name: pgvector
+description: 'pgvector is a company surfaced via the API Evangelist harvest backlog (source: self-hosted-agent-stack)
+  and added to the network as a stub for full-pipeline profiling.'
+url: https://raw.githubusercontent.com/api-evangelist/pgvector/refs/heads/main/apis.yml
+x-type: company
+x-source: harvest:self-hosted-agent-stack
+x-tier: stub
+x-tier-reason: harvest
+specificationVersion: '0.20'
+created: '2026-08-27'
+modified: '2026-08-27'
+tags:
+- Company
+apis: []
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com
+- FN: APIs.json
+  email: info@apis.io
+common:
+- type: Website
+  url: https://github.com/pgvector/pgvector
