@@ -12,6 +12,18 @@ description: >-
   through an ordinary Postgres driver. The project also publishes first-party client
   libraries for seventeen languages, which handle vector encoding for each language's
   Postgres driver.
+deliveryModel:
+  model: unknown
+  open_source: unknown
+  commercial: true
+  callable_host: false
+  label: Delivery model not determined — needs a product licence on record
+  confidence: low
+  source:
+  - pricing
+  - repository-unlicensed
+  generated: '2026-08-28'
+  method: derived
 image: https://avatars.githubusercontent.com/u/98363230?v=4
 url: https://raw.githubusercontent.com/api-evangelist/pgvector/refs/heads/main/apis.yml
 x-type: company
