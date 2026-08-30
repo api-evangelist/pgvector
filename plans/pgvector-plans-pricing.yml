@@ -1,0 +1,38 @@
+name: pgvector Plans and Pricing
+description: >-
+  pgvector publishes no plans, no pricing and no commercial tier. It is a free,
+  open-source PostgreSQL extension under the PostgreSQL License, with no hosted
+  service, no paid support offering and no sponsorship or funding page.
+generated: '2026-08-27'
+method: searched
+source: https://github.com/pgvector/pgvector
+plan_count: 0
+pricing_model: open-source
+license: PostgreSQL License
+license_url: https://github.com/pgvector/pgvector/blob/master/LICENSE
+plans: []
+evidence:
+- url: https://github.com/pgvector/pgvector
+  status: 200
+  finding: >-
+    README carries installation, usage and reference material only. No pricing section,
+    no commercial offering, no "contact sales", no enterprise edition, no dual license.
+- url: https://github.com/pgvector
+  status: 200
+  finding: >-
+    Organization has no sponsorship, funding or pricing page and no website beyond the
+    GitHub org itself.
+- url: https://pgvector.dev/
+  status: 302
+  finding: >-
+    Not the project's domain. Redirects to github.com/supabase-community/chatgpt-your-files,
+    a third-party demo repository. pgvector operates no domain of its own.
+notes:
+- >-
+  Cost of pgvector to a consumer is not zero, it is simply not charged by this project:
+  it is whatever their Postgres costs, plus the storage and memory the vectors and
+  indexes consume. The README's Scaling and Performance sections are, in effect, the
+  cost-control documentation - halfvec halves storage, binary quantization cuts it 32x.
+- >-
+  Commercial availability comes through hosted Postgres providers that bundle the
+  extension. Those are the priced surfaces; pgvector itself is not one of them.
