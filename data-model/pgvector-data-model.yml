@@ -1,0 +1,209 @@
+name: pgvector Data Model
+description: >-
+  The type, operator, function and index surface pgvector adds to PostgreSQL. This is
+  pgvector's contract: not an HTTP API, but a SQL DDL script the server executes at
+  CREATE EXTENSION time, declaring every type, cast, operator, operator class, access
+  method and function a consumer can call.
+generated: '2026-08-27'
+method: derived
+source: >-
+  Derived from the project's own installation DDL,
+  https://raw.githubusercontent.com/pgvector/pgvector/master/sql/vector.sql (fetched
+  2026-08-27, HTTP 200, 42,850 bytes, saved verbatim alongside this file as
+  pgvector-vector.sql), cross-read against the Reference section of
+  https://github.com/pgvector/pgvector#reference.
+contract:
+  kind: sql-ddl
+  file: data-model/pgvector-vector.sql
+  upstream: https://raw.githubusercontent.com/pgvector/pgvector/master/sql/vector.sql
+  extension_name: vector
+  extension_version: 0.8.6
+  http_status: 200
+  note: >-
+    Machine-readable and authoritative, but not in a format the Kin Score's
+    contract_present check recognises (OpenAPI, AsyncAPI, GraphQL SDL, Protobuf,
+    WSDL). Recorded here so the absence of an OpenAPI is not mistaken for the absence
+    of a contract.
+surface_counts:
+  types: 3
+  access_methods: 2
+  functions: 114
+  operators: 64
+  operator_classes: 24
+  aggregates: 2
+  casts: 23
+  counted_from: data-model/pgvector-vector.sql
+entities:
+- name: vector
+  kind: type
+  description: >-
+    Single-precision float vector. Each element is a real; all elements must be finite.
+  storage_bytes: 4 * dimensions + 8
+  max_dimensions: 16000
+  indexable_dimensions:
+    hnsw: 2000
+    ivfflat: 2000
+  operators: ['+', '-', '*', '||', <->, '<#>', <=>, <+>]
+  functions:
+  - binary_quantize(vector) -> bit
+  - cosine_distance(vector, vector) -> double precision
+  - inner_product(vector, vector) -> double precision
+  - l1_distance(vector, vector) -> double precision
+  - l2_distance(vector, vector) -> double precision
+  - l2_normalize(vector) -> vector
+  - subvector(vector, integer, integer) -> vector
+  - vector_dims(vector) -> integer
+  - vector_norm(vector) -> double precision
+  aggregates: [avg(vector) -> vector, sum(vector) -> vector]
+- name: halfvec
+  kind: type
+  added: 0.7.0
+  description: Half-precision float vector; halves storage against vector.
+  storage_bytes: 2 * dimensions + 8
+  max_dimensions: 16000
+  indexable_dimensions:
+    hnsw: 4000
+    ivfflat: 4000
+  operators: ['+', '-', '*', '||', <->, '<#>', <=>, <+>]
+  functions:
+  - binary_quantize(halfvec) -> bit
+  - cosine_distance(halfvec, halfvec) -> double precision
+  - inner_product(halfvec, halfvec) -> double precision
+  - l1_distance(halfvec, halfvec) -> double precision
+  - l2_distance(halfvec, halfvec) -> double precision
+  - l2_norm(halfvec) -> double precision
+  - l2_normalize(halfvec) -> halfvec
+  - subvector(halfvec, integer, integer) -> halfvec
+  - vector_dims(halfvec) -> integer
+  aggregates: [avg(halfvec) -> halfvec, sum(halfvec) -> halfvec]
+- name: sparsevec
+  kind: type
+  added: 0.7.0
+  description: Sparse float vector storing only non-zero elements.
+  storage_bytes: 8 * non-zero elements + 16
+  max_nonzero_elements: 16000
+  indexable_dimensions:
+    hnsw: 1000
+  operators: [<->, '<#>', <=>, <+>]
+  functions:
+  - cosine_distance(sparsevec, sparsevec) -> double precision
+  - inner_product(sparsevec, sparsevec) -> double precision
+  - l1_distance(sparsevec, sparsevec) -> double precision
+  - l2_distance(sparsevec, sparsevec) -> double precision
+  - l2_norm(sparsevec) -> double precision
+  - l2_normalize(sparsevec) -> sparsevec
+- name: bit
+  kind: type
+  added: 0.7.0
+  provided_by: postgresql
+  description: >-
+    Postgres' own bit type, which pgvector extends with binary distance operators and
+    index support rather than defining itself.
+  indexable_dimensions:
+    hnsw: 64000
+    ivfflat: 64000
+  operators: ['<~>', '<%>']
+  functions:
+  - hamming_distance(bit, bit) -> double precision
+  - jaccard_distance(bit, bit) -> double precision
+relationships:
+- from: vector
+  to: halfvec
+  kind: cast
+  via: 'CREATE CAST (vector AS halfvec)'
+  note: >-
+    The four vector types relate by cast, not by foreign key. 23 casts in the DDL
+    connect vector, halfvec, sparsevec, bit, real[], double precision[], numeric[] and
+    integer[], which is what makes quantization a storage decision rather than a
+    schema migration.
+- from: vector
+  to: bit
+  kind: derivation
+  via: binary_quantize(vector) -> bit
+  note: Lossy 32x compression used for the reranking pattern documented under Scaling.
+- from: type
+  to: operator_class
+  kind: has_many
+  via: 'CREATE OPERATOR CLASS <type>_<metric>_ops'
+  note: >-
+    An index is only usable for the metric its operator class names, so the choice of
+    opclass at CREATE INDEX time fixes which distance operator the planner can serve
+    from that index.
+- from: operator_class
+  to: access_method
+  kind: belongs_to
+  via: USING hnsw | USING ivfflat
+access_methods:
+- name: hnsw
+  added: 0.5.0
+  kind: graph
+  build_parameters:
+    m:
+      description: max connections per layer
+      default: 16
+    ef_construction:
+      description: size of the dynamic candidate list for graph construction
+      default: 64
+  runtime_parameters:
+    hnsw.ef_search:
+      description: size of the dynamic candidate list for search
+      default: 40
+    hnsw.iterative_scan:
+      description: iterative scan mode
+      added: 0.8.0
+    hnsw.max_scan_tuples:
+      description: max tuples to visit during an iterative scan
+      default: 20000
+    hnsw.scan_mem_multiplier:
+      description: max scan memory as a multiple of work_mem
+      default: 1
+  operator_classes:
+  - vector_l2_ops
+  - vector_ip_ops
+  - vector_cosine_ops
+  - vector_l1_ops
+  - halfvec_l2_ops
+  - halfvec_ip_ops
+  - halfvec_cosine_ops
+  - halfvec_l1_ops
+  - bit_hamming_ops
+  - bit_jaccard_ops
+  - sparsevec_l2_ops
+  - sparsevec_ip_ops
+  - sparsevec_cosine_ops
+  - sparsevec_l1_ops
+- name: ivfflat
+  kind: inverted-list
+  build_parameters:
+    lists:
+      description: number of inverted lists to partition the vectors into
+  runtime_parameters:
+    ivfflat.probes:
+      description: number of lists to probe at query time
+      default: 1
+    ivfflat.iterative_scan:
+      description: iterative scan mode
+      added: 0.8.0
+    ivfflat.max_probes:
+      description: max probes during an iterative scan
+      default: 100
+  operator_classes:
+  - vector_l2_ops
+  - vector_ip_ops
+  - vector_cosine_ops
+  - halfvec_l2_ops
+  - halfvec_ip_ops
+  - halfvec_cosine_ops
+  - bit_hamming_ops
+notes:
+- >-
+  The runtime parameters above are GUCs, set with SET or SET LOCAL. They are the
+  closest thing pgvector has to request-level options, and the documented pattern is
+  SET LOCAL inside a transaction so a tuning choice is scoped to one query rather than
+  to the session - materially relevant to any agent issuing queries over a pooled
+  connection.
+- >-
+  Index dimension ceilings are lower than type dimension ceilings, and differ per
+  access method and per type. A 16,000-dimension vector is storable but not indexable;
+  the README's documented workaround is dimensionality reduction or halfvec/binary
+  quantization with reranking.

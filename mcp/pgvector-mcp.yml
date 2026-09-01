@@ -1,0 +1,37 @@
+name: pgvector MCP
+description: >-
+  Search result for a first-party Model Context Protocol server from the pgvector
+  project. There is none, and none of the MCP servers carrying the pgvector name are
+  the project's.
+generated: '2026-08-27'
+method: searched
+source: >-
+  Web search for a first-party pgvector MCP server, plus a read of the pgvector
+  organization's 39 public repositories via the GitHub API, 2026-08-27.
+status: none
+deployment:
+  mode: none
+  endpoint: null
+  install: null
+  package: null
+  auth: unknown
+  verified: searched
+tools: []
+findings:
+- >-
+  No repository in github.com/pgvector implements, wraps or documents an MCP server.
+  The organization ships the extension, 17 client libraries, 19 example repositories
+  and a GitHub Actions setup guide - nothing agent-facing.
+- >-
+  Every MCP server found bearing the pgvector name is third-party and wraps a
+  PostgreSQL connection, not pgvector itself - among them yusufferdogan/mcp-pgvector-server,
+  the pgvector-mcp-server package on PyPI, stuzero/pg-mcp-server, sdimitrov/mcp-memory
+  and Apify's pgvector-integration. They are attributed here so a later round does not
+  mistake one for a first-party surface.
+- >-
+  No candidate tool list is derived, because there is no OpenAPI to derive one from.
+  Fabricating tools for a SQL extension would invent an agent surface that does not
+  exist.
+note: >-
+  No type MCPServer pointer is written into apis.yml. The pointer asserts the provider
+  ships a server; pgvector does not.

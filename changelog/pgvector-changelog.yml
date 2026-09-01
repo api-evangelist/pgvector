@@ -1,0 +1,117 @@
+name: pgvector Change Log
+description: >-
+  Release history for the pgvector PostgreSQL extension, read from the project's own
+  dated CHANGELOG.md. Recent window only; the full history back to 0.1.0 lives in the
+  upstream file.
+generated: '2026-08-27'
+method: searched
+source: https://github.com/pgvector/pgvector/blob/master/CHANGELOG.md
+raw_source: https://raw.githubusercontent.com/pgvector/pgvector/master/CHANGELOG.md
+docs: https://github.com/pgvector/pgvector/releases
+scheme: semver
+scheme_note: >-
+  Semantic-versioning-shaped tags (vMAJOR.MINOR.PATCH). The extension is still 0.x, so
+  minor bumps carry the breaking and behavioural changes that a 1.x project would put
+  in a major. The Postgres extension version is also declared in vector.control as
+  default_version, and every minor/patch ships a matching
+  sql/vector--<from>--<to>.sql upgrade script.
+current_version: 0.8.6
+current_version_released: '2026-07-29'
+unreleased_version: 0.8.7
+entries:
+- version: 0.8.7
+  date: null
+  status: unreleased
+  breaking: false
+  highlights:
+  - Fixed error with avg aggregate when no matching rows
+- version: 0.8.6
+  date: '2026-07-29'
+  breaking: false
+  highlights:
+  - Fixed buffer overflow with IVFFlat index build on 32-bit systems
+  - Fixed array to sparsevec cast not limiting non-zero elements
+  - Fixed memory usage for IVFFlat index scans with nested loop joins
+- version: 0.8.5
+  date: '2026-07-08'
+  breaking: false
+  highlights:
+  - Reduced memory usage for small tables for IVFFlat index builds
+- version: 0.8.4
+  date: '2026-06-30'
+  breaking: false
+  highlights:
+  - Fixed "hnsw graph not repaired" error with HNSW vacuuming
+  - Fixed possible error with inserts during HNSW vacuuming
+  - Fixed memory exceeding maintenance_work_mem with IVFFlat index builds
+- version: 0.8.3
+  date: '2026-06-17'
+  breaking: false
+  highlights:
+  - Fixed possible index corruption with HNSW vacuuming
+  - Fixed performance regression with Hamming and Jaccard distance on Postgres 18
+- version: 0.8.2
+  date: '2026-02-25'
+  breaking: false
+  highlights:
+  - Fixed buffer overflow with parallel HNSW index build
+  - Improved install target on Windows
+  - Fixed Index Searches in EXPLAIN output for Postgres 18
+- version: 0.8.1
+  date: '2025-09-04'
+  breaking: false
+  highlights:
+  - Added support for Postgres 18 rc1
+  - Improved performance of binary_quantize function
+- version: 0.8.0
+  date: '2024-10-30'
+  breaking: true
+  breaking_note: Dropped support for Postgres 12.
+  additions:
+  - Iterative index scans
+  - Casts for arrays to sparsevec
+  highlights:
+  - Improved cost estimation for better index selection when filtering
+  - Improved performance of HNSW index scans, inserts and on-disk builds
+- version: 0.7.0
+  date: '2024-04-29'
+  breaking: false
+  additions:
+  - halfvec type
+  - sparsevec type
+  - Indexing for the bit type
+  - L1 distance indexing with HNSW
+  - binary_quantize, hamming_distance, jaccard_distance, l2_normalize, subvector functions
+  - Vector concatenate operator
+  highlights:
+  - CPU dispatching for distance functions on Linux x86-64
+  - Comparison operators updated to support vectors with different dimensions
+- version: 0.6.0
+  date: '2024-01-29'
+  breaking: true
+  breaking_note: >-
+    Dropped support for Postgres 11, and changed vector storage from `extended` to
+    `external`. The release notes link dedicated upgrade instructions for Postgres 12
+    and Docker users.
+  additions:
+  - Parallel index builds for HNSW
+  - GUC parameter validation
+  - Docker tags for each supported Postgres version
+- version: 0.5.0
+  date: '2023-08-28'
+  breaking: false
+  additions:
+  - HNSW index type
+  - Parallel index builds for IVFFlat
+  - l1_distance function
+  - Element-wise multiplication for vectors
+  - sum aggregate
+observations:
+- >-
+  Release cadence tightened sharply in 2026 - five patch releases between February and
+  July 2026 against a single release in the whole of 2025 - and every one of them is a
+  correctness or memory fix in the HNSW and IVFFlat index paths rather than a feature.
+- >-
+  Breaking changes in this project are almost always Postgres major-version support
+  drops, announced in the release note for the minor that drops them (11 at 0.6.0,
+  12 at 0.8.0). There is no separate deprecation policy document.

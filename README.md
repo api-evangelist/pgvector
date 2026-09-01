@@ -64,5 +64,7 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-pgvector is a company surfaced via the API Evangelist harvest backlog (source: self-hosted-agent-stack) and added to the network as a stub for full-pipeline profiling.
+pgvector is an open-source PostgreSQL extension for vector similarity search, created and maintained by Andrew Kane. It adds the vector, halfvec and sparsevec types, six distance operators, and the HNSW and IVFFlat index access methods to a Postgres server. It is not a service and exposes no HTTP API - the interface is SQL and the contract is the extension's own installation DDL, captured in this profile under `data-model/`.
+
 - https://github.com/pgvector/pgvector
+- https://github.com/pgvector

@@ -1,0 +1,31 @@
+name: pgvector Well-Known Documents
+description: >-
+  Result of the /.well-known/ probe for pgvector. No probe was performed, and the
+  reason is itself the finding: pgvector controls no internet domain.
+generated: '2026-08-27'
+method: probed
+source: https://github.com/pgvector/pgvector
+hosts: []
+probe_note: >-
+  A /.well-known/ probe asserts something about a host the provider controls. pgvector
+  has no such host. Its home is github.com/pgvector, and github.com's well-known
+  documents belong to GitHub, Inc. - probing them and recording the results here would
+  credit pgvector with a security.txt, an openid-configuration and an api-catalog it
+  does not publish and could not publish. No host was therefore probed, and no
+  WellKnown or SecurityTxt pointer is emitted in apis.yml.
+domain_check:
+- url: https://pgvector.dev/
+  status: 302
+  redirects_to: https://github.com/supabase-community/chatgpt-your-files
+  owned_by_provider: false
+  note: >-
+    Registered by a third party and pointed at an unrelated Supabase community demo
+    repository. Checked so that a later round does not mistake it for the project's own
+    site.
+- url: https://pgvector.com/
+  status: null
+  result: no DNS resolution / no response
+- url: https://pgvector.org/
+  status: null
+  result: no DNS resolution / no response
+checked: '2026-08-27'

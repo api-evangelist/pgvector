@@ -1,0 +1,154 @@
+name: pgvector Conventions
+description: >-
+  Cross-cutting runtime semantics for consuming pgvector. pgvector is a PostgreSQL
+  extension, so almost every convention an HTTP API would define for itself - auth,
+  pagination, idempotency, rate limiting, error envelopes - is inherited from
+  PostgreSQL and from whoever operates the server, not defined by pgvector. This file
+  records which is which, because "not applicable" and "undocumented" are different
+  findings and only one of them is the project's to fix.
+generated: '2026-08-27'
+method: derived
+source: >-
+  Derived from https://github.com/pgvector/pgvector (README, fetched 2026-08-27) and
+  the extension DDL at sql/vector.sql.
+interface:
+  style: sql
+  protocol: postgresql-wire-protocol
+  transport: >-
+    Whatever the operator exposes, typically TCP 5432 with TLS. pgvector neither
+    listens nor speaks any protocol of its own; it is loaded into the Postgres backend.
+  http_surface: false
+  http_surface_note: >-
+    No REST, GraphQL, gRPC or SOAP surface exists, and none is planned as far as the
+    project documents. Consumers reach pgvector through their language's ordinary
+    Postgres driver.
+authentication:
+  defined_by: postgresql
+  mechanisms_note: >-
+    pg_hba.conf - scram-sha-256, cert, LDAP, GSSAPI and the rest of the Postgres
+    catalogue. pgvector declares no securityScheme of its own and adds no privilege
+    beyond the ordinary table and schema grants that govern the columns holding
+    vectors.
+  api_keys: false
+  oauth: false
+authorization:
+  defined_by: postgresql
+  note: >-
+    Standard Postgres role and GRANT semantics. Row-level security applies to vector
+    columns exactly as to any other column, which is the mechanism the README's
+    Multitenancy section builds on.
+idempotency:
+  supported: na
+  reason: >-
+    Idempotency keys are an HTTP retry-safety mechanism. pgvector's write path is SQL
+    inside a Postgres transaction, where ACID semantics and explicit transaction
+    control already give a client stronger guarantees than an idempotency key does.
+  transactional: true
+  transactional_note: >-
+    INSERT, UPDATE and DELETE against vector columns participate in ordinary Postgres
+    transactions, including SAVEPOINT and two-phase commit.
+pagination:
+  defined_by: postgresql
+  style: limit-offset / keyset
+  note: >-
+    The canonical pgvector query is `ORDER BY embedding <-> $1 LIMIT k`, where LIMIT is
+    not pagination but the k of k-nearest-neighbour. Paging deeper than the first page
+    of an approximate index is exactly what iterative index scans (0.8.0,
+    hnsw.iterative_scan / ivfflat.iterative_scan) exist to make correct.
+filtering:
+  note: >-
+    Documented under Filtering. Combining a WHERE clause with an approximate index can
+    return fewer than k rows, because the filter is applied after the index returns its
+    candidates. The documented remedies are a partial index, a partitioned table, or
+    iterative scans.
+  docs: https://github.com/pgvector/pgvector#filtering
+versioning:
+  surface: extension-version
+  read_with: SELECT extversion FROM pg_extension WHERE extname = 'vector'
+  upgrade_with: ALTER EXTENSION vector UPDATE
+  note: >-
+    A consumer can interrogate the deployed contract version at runtime from inside a
+    normal connection. That is a genuinely strong capability and it has no HTTP
+    equivalent short of a version header.
+errors:
+  envelope: postgresql-sqlstate
+  format: >-
+    Standard Postgres error fields - SQLSTATE, message, detail, hint - surfaced by
+    whichever driver the client uses. Not RFC 9457; there is no HTTP layer to carry a
+    problem+json body.
+  rfc9457: false
+  catalog: errors/pgvector-problem-types.yml
+rate_limiting:
+  published: na
+  reason: >-
+    Not a hosted service. Concurrency and resource ceilings are the operator's -
+    max_connections, work_mem, maintenance_work_mem, statement_timeout - and vary per
+    deployment. Recording a limit_count of zero here would misread an inapplicable
+    dimension as an undocumented one.
+  operator_controls: [max_connections, work_mem, maintenance_work_mem, statement_timeout, max_parallel_maintenance_workers]
+request_tracing:
+  note: >-
+    Postgres application_name and log_line_prefix, plus EXPLAIN ANALYZE for per-query
+    inspection. From 0.8.2 the EXPLAIN output reports Index Searches on Postgres 18,
+    which is how a client sees whether an iterative scan re-probed.
+observability:
+  index_build_progress:
+    supported: true
+    via: pg_stat_progress_create_index
+    docs: https://github.com/pgvector/pgvector#indexing-progress
+    note: >-
+      Both access methods report phases through the standard Postgres progress view, so
+      a long index build is observable rather than opaque.
+  monitoring:
+    via: pg_stat_user_tables, pg_stat_user_indexes, pg_buffercache
+    docs: https://github.com/pgvector/pgvector#monitoring
+dry_run_mode:
+  supported: na
+  reason: >-
+    No write API to rehearse. The nearest equivalent is EXPLAIN, which shows the plan a
+    query would take without executing it, and BEGIN ... ROLLBACK, which executes a
+    write and discards it.
+  nearest_equivalents: [EXPLAIN, 'BEGIN ... ROLLBACK']
+reversibility:
+  grade: na
+  applicable: false
+  reason: >-
+    Reversibility grades an API's ability to take back an action an agent has already
+    taken. pgvector publishes no write operations of its own: it adds types, operators
+    and index access methods, and every write that touches them is an ordinary
+    PostgreSQL statement whose reversal semantics belong to PostgreSQL, not to
+    pgvector. Grading it would credit or penalise this project for a property it does
+    not control.
+  inherited_from: postgresql
+  inherited_mechanisms:
+  - operation: ROLLBACK
+    reverses: any statement in the open transaction
+    window: until COMMIT
+    note: >-
+      Unbounded within the transaction and absolute. Stated by PostgreSQL, not by
+      pgvector.
+  - operation: ROLLBACK TO SAVEPOINT
+    reverses: statements after the named savepoint
+    window: until COMMIT
+  - operation: point-in-time recovery
+    reverses: committed writes
+    window: operator-defined, bounded by WAL retention
+    note: >-
+      The README names PITR as a pgvector advantage over a standalone vector database,
+      but the retention window is set by whoever runs the server. No window is stated
+      by the project and none is invented here.
+  extension_level:
+  - operation: DROP EXTENSION vector
+    reverses: CREATE EXTENSION vector
+    window: any time
+    caveat: >-
+      Reversible only in the DDL sense. Dropping the extension drops the columns and
+      indexes that depend on it, so the data goes with it - a fact worth stating
+      plainly to any agent that might treat DROP as an undo.
+    docs: https://github.com/pgvector/pgvector#installation
+cross_references:
+  data_model: data-model/pgvector-data-model.yml
+  lifecycle: lifecycle/pgvector-lifecycle.yml
+  changelog: changelog/pgvector-changelog.yml
+  conformance: conformance/pgvector-conformance.yml
+  packages: packages/pgvector-packages.yml

@@ -1,0 +1,30 @@
+name: pgvector Agent Skills
+description: >-
+  Packaged agent skills for pgvector, grounded in the extension's own DDL contract.
+  pgvector has no HTTP API, so these skills name SQL types, operators, operator classes
+  and GUCs rather than operationIds - every identifier in them is declared in
+  data-model/pgvector-vector.sql.
+generated: '2026-08-27'
+method: generated
+source: https://github.com/pgvector/pgvector#readme
+grounded_in: data-model/pgvector-vector.sql
+provider_published: false
+provider_published_note: >-
+  pgvector publishes no AGENTS.md, no skills directory and no llms.txt; probed
+  2026-08-27, both raw.githubusercontent.com paths returned 404. These are authored by
+  API Evangelist from the project's public documentation.
+skills:
+- name: pgvector-semantic-search
+  file: skills/pgvector-semantic-search.md
+  summary: >-
+    Declare a vector column, pick a metric and matching operator class, build an HNSW
+    index, and write a k-NN query the planner will use it for - including the three
+    conditions that silently defeat the index and the reasons a query returns fewer
+    than k rows with no error.
+- name: pgvector-quantized-search
+  file: skills/pgvector-quantized-search.md
+  summary: >-
+    Reduce storage and index memory with halfvec, binary quantization or subvector
+    indexing, and restore recall with the two-stage rerank the README documents.
+    Covers the index dimension ceilings that force this and how to verify the recall
+    cost against exact search.

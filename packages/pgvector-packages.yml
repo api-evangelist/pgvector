@@ -1,0 +1,273 @@
+name: pgvector Client Libraries
+description: >-
+  First-party pgvector client libraries and example repositories, published by the
+  pgvector project (Andrew Kane) under github.com/pgvector. pgvector itself is a
+  PostgreSQL extension with no HTTP API; these libraries add vector type encoding /
+  decoding and ORM integration on top of each language's existing Postgres driver.
+generated: '2026-08-27'
+method: searched
+source: >-
+  https://github.com/pgvector/pgvector#languages plus each package's own registry
+  metadata endpoint (registry.npmjs.org, pypi.org, rubygems.org, crates.io,
+  repo.packagist.org, proxy.golang.org, api.nuget.org, search.maven.org, hex.pm,
+  pub.dev, hackage.haskell.org, JuliaRegistries/General, nim-lang/packages),
+  queried 2026-08-27.
+notes: >-
+  The pgvector README distinguishes "libraries" (a real published package) from
+  "examples" (a repository of sample code with no distributable artifact). Only the
+  library repositories are listed here; the examples-only repositories are recorded
+  under examples_only[] so the distinction stays legible. Maven Central is the
+  clearest decay signal in this set: com.pgvector:pgvector last published 0.1.6 on
+  2024-07-17, more than two years before the extension's current 0.8.6 release.
+packages:
+- name: pgvector
+  registry: pypi
+  language: Python
+  official: true
+  url: https://pypi.org/project/pgvector/
+  repository: https://github.com/pgvector/pgvector-python
+  version: 0.5.0
+  published: '2026-07-06'
+- name: pgvector
+  registry: npm
+  language: JavaScript / TypeScript
+  official: true
+  url: https://www.npmjs.com/package/pgvector
+  repository: https://github.com/pgvector/pgvector-node
+  version: 0.3.0
+  published: '2026-05-31'
+  note: Covers Node.js, Deno and Bun.
+- name: pgvector
+  registry: rubygems
+  language: Ruby
+  official: true
+  url: https://rubygems.org/gems/pgvector
+  repository: https://github.com/pgvector/pgvector-ruby
+  version: 0.3.3
+  published: '2026-03-19'
+- name: pgvector
+  registry: crates.io
+  language: Rust
+  official: true
+  url: https://crates.io/crates/pgvector
+  repository: https://github.com/pgvector/pgvector-rust
+  version: 0.4.2
+  published: '2026-05-22'
+- name: github.com/pgvector/pgvector-go
+  registry: go-modules
+  language: Go
+  official: true
+  url: https://pkg.go.dev/github.com/pgvector/pgvector-go
+  repository: https://github.com/pgvector/pgvector-go
+  version: v0.4.1
+  published: '2026-07-30'
+- name: pgvector/pgvector
+  registry: packagist
+  language: PHP
+  official: true
+  url: https://packagist.org/packages/pgvector/pgvector
+  repository: https://github.com/pgvector/pgvector-php
+  version: v0.2.2
+  published: '2025-02-15'
+  note: >-
+    A second Packagist entry, ankane/pgvector, points at the same repository and is the
+    superseded name from before the project moved to the pgvector organization.
+- name: Pgvector
+  registry: nuget
+  language: C# / F# / Visual Basic
+  official: true
+  url: https://www.nuget.org/packages/Pgvector
+  repository: https://github.com/pgvector/pgvector-dotnet
+  version: 0.3.2
+  published: '2025-05-20'
+- name: Pgvector.EntityFrameworkCore
+  registry: nuget
+  language: C#
+  official: true
+  url: https://www.nuget.org/packages/Pgvector.EntityFrameworkCore
+  repository: https://github.com/pgvector/pgvector-dotnet
+  version: 0.3.0
+  published: '2025-12-21'
+- name: com.pgvector:pgvector
+  registry: maven-central
+  language: Java / Kotlin / Groovy / Scala
+  official: true
+  url: https://central.sonatype.com/artifact/com.pgvector/pgvector
+  repository: https://github.com/pgvector/pgvector-java
+  version: 0.1.6
+  published: '2024-07-17'
+  note: >-
+    Oldest first-party release in the set. The repository's newest tag is also v0.1.6,
+    so the package is current with its source, not merely unpublished.
+- name: pgvector
+  registry: hex
+  language: Elixir
+  official: true
+  url: https://hex.pm/packages/pgvector
+  repository: https://github.com/pgvector/pgvector-elixir
+  version: 0.4.0
+  published: '2026-06-04'
+- name: pgvector
+  registry: pub.dev
+  language: Dart
+  official: true
+  url: https://pub.dev/packages/pgvector
+  repository: https://github.com/pgvector/pgvector-dart
+  version: 0.2.0
+  published: '2024-09-27'
+- name: pgvector
+  registry: hackage
+  language: Haskell
+  official: true
+  url: https://hackage.haskell.org/package/pgvector
+  repository: https://github.com/pgvector/pgvector-haskell
+  version: 0.1.1
+  published: '2025-03-07'
+- name: pgvector
+  registry: nimble
+  language: Nim
+  official: true
+  url: https://github.com/pgvector/pgvector-nim
+  repository: https://github.com/pgvector/pgvector-nim
+  version: v0.1.0
+  published: '2025-08-02'
+  note: >-
+    Listed in the nim-lang/packages index, which resolves to the git repository rather
+    than to a hosted artifact; version and date are read from the newest git tag.
+- name: Pgvector
+  registry: julia-general
+  language: Julia
+  official: true
+  url: https://github.com/pgvector/Pgvector.jl
+  repository: https://github.com/pgvector/Pgvector.jl
+  version: v0.1.1
+  published: '2025-06-25'
+  note: >-
+    Registered in JuliaRegistries/General (P/Pgvector/Versions.toml lists 0.1.0 and
+    0.1.1). The General registry stores no publication timestamp, so the date is the
+    tag's commit date.
+- name: pgvector-cpp
+  registry: github-tag
+  language: C++
+  official: true
+  url: https://github.com/pgvector/pgvector-cpp
+  repository: https://github.com/pgvector/pgvector-cpp
+  version: v0.3.0
+  published: '2026-03-08'
+  note: Header-only library, vendored from the repository; no package registry.
+- name: pgvector-swift
+  registry: swiftpm
+  language: Swift
+  official: true
+  url: https://github.com/pgvector/pgvector-swift
+  repository: https://github.com/pgvector/pgvector-swift
+  version: v0.1.0
+  published: '2025-03-05'
+  note: >-
+    Swift Package Manager resolves directly from the git tag; there is no central
+    registry metadata endpoint to query.
+- name: pgvector-lua
+  registry: github-tag
+  language: Lua
+  official: true
+  url: https://github.com/pgvector/pgvector-lua
+  repository: https://github.com/pgvector/pgvector-lua
+  version: v0.2.0
+  published: '2025-06-07'
+  note: >-
+    No LuaRocks entry was found under the pgvector or ankane manifests on 2026-08-27;
+    version and date are read from the newest git tag.
+examples_only:
+  note: >-
+    Repositories the pgvector README lists as examples rather than libraries. They
+    publish no package and are not counted as SDKs.
+  repositories:
+  - https://github.com/pgvector/pgvector-c
+  - https://github.com/pgvector/pgvector-r
+  - https://github.com/pgvector/pgvector-perl
+  - https://github.com/pgvector/pgvector-crystal
+  - https://github.com/pgvector/pgvector-zig
+  - https://github.com/pgvector/pgvector-ocaml
+  - https://github.com/pgvector/pgvector-lisp
+  - https://github.com/pgvector/pgvector-raku
+  - https://github.com/pgvector/pgvector-d
+  - https://github.com/pgvector/pgvector-gleam
+  - https://github.com/pgvector/pgvector-erlang
+  - https://github.com/pgvector/pgvector-fortran
+  - https://github.com/pgvector/pgvector-pascal
+  - https://github.com/pgvector/pgvector-ada
+  - https://github.com/pgvector/pgvector-algol
+  - https://github.com/pgvector/pgvector-prolog
+  - https://github.com/pgvector/pgvector-racket
+  - https://github.com/pgvector/pgvector-tcl
+  - https://github.com/pgvector/pgvector-cobol
+third_party:
+  note: >-
+    Named in the pgvector README but maintained outside the pgvector organization.
+  packages:
+  - name: neighbor
+    language: Ruby
+    official: false
+    url: https://github.com/ankane/neighbor
+    note: Rails nearest-neighbor integration by the same author, in a personal namespace.
+distributions:
+  note: >-
+    The extension itself, as shipped. These are how a consumer actually gets pgvector
+    onto a server; the packages[] above are language bindings that assume it is already
+    installed.
+  entries:
+  - name: vector
+    registry: pgxn
+    kind: postgres-extension
+    official: true
+    url: https://pgxn.org/dist/vector
+    version: 0.8.6
+    published: '2026-07-29'
+    maintainer: Andrew Kane
+    note: >-
+      PostgreSQL Extension Network distribution, installed with `pgxn install vector`.
+      Version and date read from https://api.pgxn.org/dist/vector.json on 2026-08-27.
+  - name: pgvector/pgvector
+    registry: docker-hub
+    kind: container-image
+    official: true
+    url: https://hub.docker.com/r/pgvector/pgvector
+    version: 0.8.6
+    published: '2026-07-29'
+    note: >-
+      Tagged per Postgres major and Debian base - pg13 through pg18, bookworm and
+      trixie - both floating (pg18) and pinned (0.8.6-pg18). Version tracks the
+      extension release; the date is that release's date.
+  - name: postgresql-<pgmajor>-pgvector
+    registry: postgresql-apt
+    kind: os-package
+    official: false
+    url: https://wiki.postgresql.org/wiki/Apt
+    version: null
+    published: null
+    note: >-
+      Built and published by the PostgreSQL APT repository, not by the pgvector
+      project. Version lags upstream by whatever the distribution maintainers ship, and
+      the repository publishes no per-package metadata endpoint this pipeline queries -
+      recorded as null rather than guessed.
+  - name: pgvector_<pgmajor>
+    registry: postgresql-yum
+    kind: os-package
+    official: false
+    url: https://yum.postgresql.org/
+    version: null
+    published: null
+    note: Same as APT - packaged downstream, no queried metadata endpoint.
+  other_channels:
+    note: >-
+      Named in the README's installation section but not first-party distributions.
+    channels: [homebrew, conda-forge, FreeBSD pkg, Alpine apk, Postgres.app]
+
+tooling:
+- name: setup-pgvector
+  kind: github-action
+  official: true
+  url: https://github.com/pgvector/setup-pgvector
+  note: >-
+    Installation instructions for GitHub Actions runners. Not published to the GitHub
+    Marketplace as a versioned action at time of probe.

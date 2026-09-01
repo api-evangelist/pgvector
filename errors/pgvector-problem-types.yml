@@ -1,0 +1,199 @@
+name: pgvector Error Catalog
+description: >-
+  Every error pgvector raises itself, with the PostgreSQL SQLSTATE class it raises it
+  under and what a caller should do about it. There is no HTTP layer here and no RFC
+  9457 problem+json: these arrive as ordinary Postgres errors through whichever driver
+  the client uses, and a caller matches on SQLSTATE and message text.
+generated: '2026-08-27'
+method: derived
+format: postgresql-sqlstate
+rfc9457: false
+source: >-
+  Derived by extracting every ereport() errcode/errmsg pair from the project's own C
+  source at https://github.com/pgvector/pgvector/tree/master/src (files vector.c,
+  halfvec.c, sparsevec.c, bitvec.c, hnsw.c, hnswbuild.c, hnswutils.c, hnswvacuum.c,
+  ivfflat.c, ivfbuild.c, ivfscan.c, fetched 2026-08-27, HTTP 200), cross-read against
+  the Troubleshooting section of https://github.com/pgvector/pgvector#troubleshooting.
+  Message strings are verbatim; %d and %u are the project's own format placeholders.
+coverage_note: >-
+  Errors raised by PostgreSQL itself while executing a query against a vector column -
+  permission, connection, out-of-memory, statement timeout - are not listed. They are
+  not pgvector's and their semantics are documented by PostgreSQL.
+sqlstate_classes:
+  ERRCODE_DATA_EXCEPTION:
+    sqlstate: '22000'
+    count: 37
+    meaning: The value supplied is not a valid instance of the type, or two operands disagree.
+  ERRCODE_INVALID_TEXT_REPRESENTATION:
+    sqlstate: 22P02
+    count: 20
+    meaning: A literal could not be parsed into the type.
+  ERRCODE_INVALID_PARAMETER_VALUE:
+    sqlstate: '22023'
+    count: 13
+    meaning: A type modifier or index build parameter is out of range or contradictory.
+  ERRCODE_PROGRAM_LIMIT_EXCEEDED:
+    sqlstate: '54000'
+    count: 12
+    meaning: A hard ceiling in the type or the index access method was exceeded.
+  ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE:
+    sqlstate: '22003'
+    count: 3
+  ERRCODE_NULL_VALUE_NOT_ALLOWED:
+    sqlstate: 22004
+    count: 3
+  ERRCODE_FEATURE_NOT_SUPPORTED:
+    sqlstate: 0A000
+    count: 2
+errors:
+- message: expected %d dimensions, not %d
+  sqlstate: '22000'
+  class: ERRCODE_DATA_EXCEPTION
+  meaning: >-
+    The column was declared with a fixed dimension count and the value supplied has a
+    different one.
+  remediation: >-
+    Check the embedding model's output width against the column's declared typmod.
+    This is the error an agent will hit most often when a model is swapped.
+- message: different vector dimensions %d and %d
+  sqlstate: '22000'
+  class: ERRCODE_DATA_EXCEPTION
+  variants: [different halfvec dimensions %d and %d, different sparsevec dimensions %d and %d, different bit lengths %u and %u]
+  meaning: A distance function or arithmetic operator was given two operands of unequal width.
+  remediation: Ensure both sides of the operator come from the same embedding space.
+- message: NaN not allowed in vector
+  sqlstate: '22000'
+  class: ERRCODE_DATA_EXCEPTION
+  variants: [NaN not allowed in halfvec, NaN not allowed in sparsevec]
+  meaning: All elements must be finite; NaN is rejected at input time.
+  remediation: Filter or replace non-finite elements before insert. Often a signal that the upstream model produced a degenerate embedding.
+- message: infinite value not allowed in vector
+  sqlstate: '22000'
+  class: ERRCODE_DATA_EXCEPTION
+  variants: [infinite value not allowed in halfvec, infinite value not allowed in sparsevec]
+  meaning: Infinity and -Infinity are rejected at input time.
+- message: 'invalid input syntax for type vector: ...'
+  sqlstate: 22P02
+  class: ERRCODE_INVALID_TEXT_REPRESENTATION
+  variants: ['invalid input syntax for type halfvec: ...', 'invalid input syntax for type sparsevec: ...']
+  meaning: The text literal is not parseable as the type.
+  remediation: >-
+    Use the bracket form '[1,2,3]' for vector and halfvec - Postgres array braces
+    '{1,2,3}' are a different type and a common confusion the README calls out - and
+    the '{index:value,...}/dimensions' form for sparsevec.
+- message: 'ran out of buffer: ...'
+  sqlstate: 22P02
+  class: ERRCODE_INVALID_TEXT_REPRESENTATION
+  meaning: Binary (COPY BINARY / driver binary format) input was truncated.
+- message: array must be 1-D
+  sqlstate: '22000'
+  class: ERRCODE_DATA_EXCEPTION
+  meaning: A multi-dimensional Postgres array was cast to a vector type.
+- message: array must not contain nulls
+  sqlstate: 22004
+  class: ERRCODE_NULL_VALUE_NOT_ALLOWED
+  meaning: A Postgres array being cast to a vector type contains NULL elements.
+- message: unsupported array type
+  sqlstate: '22000'
+  class: ERRCODE_DATA_EXCEPTION
+  meaning: >-
+    The array element type has no cast to the vector type. Casts exist from real[],
+    double precision[], numeric[] and integer[].
+- message: vector cannot have more than %d dimensions
+  sqlstate: '54000'
+  class: ERRCODE_PROGRAM_LIMIT_EXCEEDED
+  variants: [halfvec cannot have more than %d dimensions, sparsevec cannot have more than %d dimensions, sparsevec cannot have more than %d non-zero elements]
+  meaning: The type ceiling was exceeded - 16,000 for vector, halfvec and sparsevec non-zero elements.
+  remediation: Reduce dimensionality before storage.
+- message: vector must have at least 1 dimension
+  sqlstate: '22000'
+  class: ERRCODE_DATA_EXCEPTION
+  variants: [halfvec must have at least 1 dimension, sparsevec must have at least 1 dimension]
+- message: dimensions for type vector cannot exceed %d
+  sqlstate: '22023'
+  class: ERRCODE_INVALID_PARAMETER_VALUE
+  variants: [dimensions for type halfvec cannot exceed %d, dimensions for type sparsevec cannot exceed %d, 'dimensions for type vector must be at least 1', invalid type modifier]
+  meaning: The typmod in the column declaration - vector(N) - is out of range or malformed.
+  raised_at: DDL time, not insert time.
+- message: column cannot have more than %d dimensions for hnsw index
+  sqlstate: '54000'
+  class: ERRCODE_PROGRAM_LIMIT_EXCEEDED
+  variants: [column cannot have more than %d dimensions for ivfflat index, sparsevec cannot have more than %d non-zero elements for hnsw index]
+  meaning: >-
+    The index access method's dimension ceiling is lower than the type's. vector and
+    halfvec index to 2,000 and 4,000 respectively, bit to 64,000, sparsevec to 1,000
+    non-zero elements under HNSW.
+  remediation: >-
+    Store at full width and index a reduced or quantized expression - the pattern the
+    README documents under Indexing Subvectors and Scaling.
+  raised_at: CREATE INDEX time.
+- message: column does not have dimensions
+  sqlstate: '22023'
+  class: ERRCODE_INVALID_PARAMETER_VALUE
+  meaning: An index was requested on a vector column declared without a fixed dimension count.
+  remediation: Declare the column as vector(N). An unbounded vector column cannot be indexed.
+- message: dimensions must be greater than one for this opclass
+  sqlstate: '22023'
+  class: ERRCODE_INVALID_PARAMETER_VALUE
+- message: type not supported for hnsw index
+  sqlstate: 0A000
+  class: ERRCODE_FEATURE_NOT_SUPPORTED
+  variants: [type not supported for ivfflat index]
+  meaning: >-
+    No operator class exists binding that type and metric to that access method. The
+    supported matrix is in data-model/pgvector-data-model.yml.
+- message: ef_construction must be greater than or equal to 2 * m
+  sqlstate: '22023'
+  class: ERRCODE_INVALID_PARAMETER_VALUE
+  meaning: HNSW build parameters are mutually inconsistent.
+  raised_at: CREATE INDEX time.
+- message: index tuple too large
+  sqlstate: '54000'
+  class: ERRCODE_PROGRAM_LIMIT_EXCEEDED
+- message: sparsevec indices must be in ascending order
+  sqlstate: '22000'
+  class: ERRCODE_DATA_EXCEPTION
+  variants: [sparsevec indices must not contain duplicates, sparsevec index out of bounds, sparsevec cannot have more elements than dimensions, sparsevec cannot have negative number of elements, binary representation of sparsevec cannot contain zero values]
+  meaning: >-
+    The sparsevec literal is structurally invalid. Indices are 1-based, strictly
+    ascending, unique, within the declared dimension count, and zero values may not be
+    stored.
+notices:
+  note: >-
+    Not errors - NOTICE-level messages a client may see and should surface rather than
+    swallow, because each one means the result set or the index is not what was asked
+    for.
+  entries:
+  - message: 'hnsw graph no longer fits into maintenance_work_mem after %d tuples'
+    meaning: >-
+      The index build spilled to disk and will be substantially slower. Raise
+      maintenance_work_mem and rebuild.
+    docs: https://github.com/pgvector/pgvector#index-build-time
+  - message: ivfflat index created with little data
+    meaning: >-
+      Too few rows for the requested list count; recall will be poor. The README's
+      advice is to drop the index and recreate it once the table has more data.
+silent_failures:
+  note: >-
+    Behaviours that return wrong-looking results with no error at all. These are the
+    ones an agent most needs told, because there is no exception to catch.
+  entries:
+  - condition: Fewer than k rows returned after adding an HNSW index
+    cause: >-
+      Results are capped by hnsw.ef_search (default 40), and reduced further by dead
+      tuples or a WHERE clause applied after the index returns candidates.
+    remedy: Raise hnsw.ef_search, or enable hnsw.iterative_scan (0.8.0+).
+    docs: https://github.com/pgvector/pgvector#iterative-index-scans
+  - condition: Fewer than k rows returned after adding an IVFFlat index
+    cause: Too few probes (ivfflat.probes, default 1), or an index built with too little data.
+    remedy: Raise ivfflat.probes, or enable ivfflat.iterative_scan.
+  - condition: NULL vectors, and zero vectors under cosine distance, are silently not indexed
+    cause: Documented behaviour of both access methods.
+    remedy: Filter them explicitly if their absence from results would be surprising.
+  - condition: The query does not use the index at all
+    cause: >-
+      The index is only usable when the query has ORDER BY on a bare distance operator
+      in ascending order plus a LIMIT. Wrapping the operator in an expression - for
+      instance ORDER BY 1 - (embedding <=> $1) DESC - defeats it.
+    remedy: Order by the distance operator directly.
+    docs: https://github.com/pgvector/pgvector#troubleshooting

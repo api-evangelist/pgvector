@@ -1,0 +1,99 @@
+name: pgvector Lifecycle
+description: >-
+  Versioning, upgrade, platform-support and deprecation posture for the pgvector
+  PostgreSQL extension, read from the project's own README, CHANGELOG and
+  vector.control.
+generated: '2026-08-27'
+method: searched
+source: https://github.com/pgvector/pgvector
+docs:
+- https://github.com/pgvector/pgvector#upgrading
+- https://github.com/pgvector/pgvector/blob/master/CHANGELOG.md
+- https://github.com/pgvector/pgvector/releases
+versioning:
+  scheme: semver
+  current: 0.8.6
+  released: '2026-07-29'
+  declared_in: https://raw.githubusercontent.com/pgvector/pgvector/master/vector.control
+  declared_as: default_version = '0.8.6'
+  note: >-
+    The extension version is a first-class runtime value, not just a release tag:
+    it is declared in vector.control and readable in any database with
+    `SELECT extversion FROM pg_extension WHERE extname = 'vector'`.
+  pre_1_0: true
+  pre_1_0_note: >-
+    Still 0.x after five years, so minor bumps carry the breaking changes a 1.x
+    project would reserve for a major.
+upgrade:
+  mechanism: ALTER EXTENSION vector UPDATE
+  docs: https://github.com/pgvector/pgvector#upgrading
+  migration_scripts: true
+  migration_scripts_note: >-
+    Every release ships a sql/vector--<from>--<to>.sql upgrade script in the
+    repository, so Postgres can move an installed extension forward in place. The
+    upgrade path is declared, versioned and machine-executable - the strongest
+    lifecycle signal this project publishes.
+  in_place: true
+  restart_required: false
+platform_support:
+  postgres_minimum: '13'
+  postgres_maximum_tested: '18'
+  source: https://github.com/pgvector/pgvector#installation
+  statement: 'Compile and install the extension (supports Postgres 13+)'
+  distribution_matrix:
+    kind: docker-tags
+    url: https://github.com/pgvector/pgvector#docker
+    versions: ['13', '14', '15', '16', '17', '18']
+    bases: [bookworm, trixie]
+    note: >-
+      Images are published per Postgres major and per Debian base, tagged both
+      floating (pg18) and pinned (0.8.6-pg18), so a consumer can pin the extension
+      version and the server version independently.
+deprecation:
+  policy_published: false
+  policy_note: >-
+    There is no standalone deprecation or support-window policy document. Support
+    drops are announced in the release note of the minor that performs them, and the
+    only class of breaking change observed in the history is a Postgres major-version
+    support drop.
+  observed_removals:
+  - what: Postgres 11 support
+    version: 0.6.0
+    date: '2024-01-29'
+  - what: Postgres 12 support
+    version: 0.8.0
+    date: '2024-10-30'
+  sunset_headers: na
+  sunset_headers_note: >-
+    RFC 8594 Sunset/Deprecation headers are an HTTP mechanism. pgvector exposes no
+    HTTP surface, so there is nothing to signal them on.
+  deprecated_operations: []
+  deprecated_operations_note: >-
+    No SQL function, operator or type declared by sql/vector.sql is marked deprecated
+    as of 0.8.6.
+sla:
+  published: false
+  note: >-
+    Open-source extension with no hosted service and no operator, so there is no
+    availability commitment to publish. Availability belongs to whoever runs the
+    Postgres server - self-managed or a hosted provider that bundles the extension.
+status_page:
+  published: false
+  note: >-
+    No status page exists and none could exist: pgvector is software a consumer
+    installs, not a service the project operates.
+support:
+  channel: github-issues
+  url: https://github.com/pgvector/pgvector/issues
+  discussions_enabled: false
+maintainership:
+  model: single-maintainer
+  maintainer: Andrew Kane
+  organization: https://github.com/pgvector
+  organization_created: '2022-01-24'
+  repository_created: '2021-04-20'
+  risk_note: >-
+    Every first-party repository in the organization - the extension and all 37
+    language libraries and example sets - is authored by one person. That is a
+    concentration signal a consumer should weigh, recorded as a fact about the
+    project's structure and not as a judgement about it.

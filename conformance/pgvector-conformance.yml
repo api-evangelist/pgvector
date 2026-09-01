@@ -1,0 +1,129 @@
+name: pgvector Conformance
+description: >-
+  Which cross-cutting and domain standards pgvector's published contract actually
+  conforms to. Assertions here are read from the extension's own DDL, source and
+  README - not from marketing claims, of which this project makes none.
+generated: '2026-08-27'
+method: derived
+source: >-
+  https://github.com/pgvector/pgvector (README and sql/vector.sql, fetched 2026-08-27)
+  and the project's C source under src/.
+conformance:
+- id: postgresql-extension
+  name: PostgreSQL Extension Framework
+  conforms: true
+  evidence: >-
+    Ships vector.control declaring default_version, module_pathname and relocatable,
+    plus sql/vector.sql and a complete chain of sql/vector--<from>--<to>.sql upgrade
+    scripts. Installed with CREATE EXTENSION and upgraded with ALTER EXTENSION vector
+    UPDATE. This is the domain standard for pgvector's market and it conforms to it
+    fully, including the optional in-place upgrade path many extensions omit.
+  spec: https://www.postgresql.org/docs/current/extend-extensions.html
+  domain_standard: true
+- id: postgresql-index-access-method
+  name: PostgreSQL Index Access Method API
+  conforms: true
+  evidence: >-
+    Declares two access methods with CREATE ACCESS METHOD (hnsw, ivfflat) and 24
+    operator classes binding types to metrics, so the query planner selects the index
+    through the ordinary Postgres costing path. Reports build phases through
+    pg_stat_progress_create_index and supports parallel builds, VACUUM and WAL.
+  spec: https://www.postgresql.org/docs/current/indexam.html
+  domain_standard: true
+- id: sqlstate
+  name: SQLSTATE error classes (SQL standard / PostgreSQL)
+  conforms: true
+  evidence: >-
+    Every ereport() in src/ carries an explicit errcode from the standard classes -
+    22000, 22P02, 22023, 54000, 22003, 22004, 0A000 - rather than defaulting to
+    internal_error. Catalogued in errors/pgvector-problem-types.yml.
+- id: semver
+  name: Semantic Versioning
+  conforms: partial
+  evidence: >-
+    Tags are vMAJOR.MINOR.PATCH and the CHANGELOG is dated, but the project has stayed
+    on 0.x for five years while shipping breaking changes (Postgres 11 support dropped
+    at 0.6.0, 12 at 0.8.0) in minor releases. Under SemVer 0.x that is permitted, so
+    this is a conformant use of the 0.x escape hatch rather than a violation - but a
+    consumer cannot use the version number alone to predict a break.
+  spec: https://semver.org
+- id: pgxn-meta
+  name: PGXN distribution metadata
+  conforms: true
+  evidence: >-
+    Published to the PostgreSQL Extension Network as dist `vector`; api.pgxn.org
+    returned version 0.8.6 dated 2026-07-29 on 2026-08-27.
+  spec: https://pgxn.org/spec/
+- id: openapi
+  name: OpenAPI
+  conforms: false
+  evidence: >-
+    No OpenAPI is published and none is applicable - pgvector exposes no HTTP surface.
+    Recorded explicitly so the absence is read as inapplicability, not as an omission.
+- id: asyncapi
+  name: AsyncAPI
+  conforms: false
+  evidence: >-
+    No event or streaming surface. pgvector adds no logical-decoding output plugin, no
+    NOTIFY channel and no webhook; change data capture over a table holding vectors is
+    Postgres' own replication, not pgvector's.
+- id: graphql
+  name: GraphQL
+  conforms: false
+  evidence: No GraphQL endpoint or SDL.
+- id: oauth2
+  name: OAuth 2.0
+  conforms: false
+  evidence: >-
+    Not applicable. Authentication is PostgreSQL's (pg_hba.conf, scram-sha-256, cert,
+    LDAP, GSSAPI); pgvector defines no authentication of its own.
+- id: rfc9457
+  name: RFC 9457 Problem Details
+  conforms: false
+  evidence: Not applicable - no HTTP responses to carry a problem+json body.
+- id: idempotency
+  name: Idempotency keys
+  conforms: false
+  evidence: >-
+    Not applicable. Retry safety is provided by PostgreSQL transactions, which is a
+    stronger guarantee than an idempotency key, not a weaker one.
+- id: pagination
+  name: Pagination conventions
+  conforms: false
+  evidence: >-
+    Not applicable in the HTTP sense. SQL LIMIT/OFFSET and keyset pagination are
+    PostgreSQL's; the k in a k-NN query is a LIMIT, not a page size.
+compliance:
+  certifications_published: false
+  note: >-
+    No SOC 2, ISO 27001, PCI, HIPAA or FedRAMP attestation, and none would be
+    meaningful: pgvector operates no service and processes no customer data. Compliance
+    attaches to whoever runs the Postgres server. Recorded as an explicit absence so it
+    is not read as an unchecked gap.
+security_program:
+  disclosure_policy_published: false
+  probes:
+  - url: https://raw.githubusercontent.com/pgvector/pgvector/master/SECURITY.md
+    status: 404
+  - url: https://raw.githubusercontent.com/pgvector/.github/main/SECURITY.md
+    status: 404
+  note: >-
+    No SECURITY.md in the repository and none in the organization's .github repository,
+    so GitHub shows no "Report a vulnerability" path and there is no stated coordinated
+    disclosure process. This is the single clearest, cheapest gap in the project's
+    posture, and it matters more than usual here: 0.8.2, 0.8.3 and 0.8.6 each fixed a
+    buffer overflow or index-corruption defect in code that runs inside the database
+    backend. A finder currently has no published channel other than a public issue.
+  remedy: >-
+    Add a SECURITY.md naming a contact and an expected response time. GitHub surfaces
+    it automatically and it costs nothing to run.
+licensing:
+  license: PostgreSQL License
+  spdx: PostgreSQL
+  url: https://github.com/pgvector/pgvector/blob/master/LICENSE
+  note: >-
+    Permissive, OSI-approved, and the same license PostgreSQL itself uses - which is
+    why hosted Postgres providers can and do bundle the extension without negotiation.
+    GitHub's license detector reports NOASSERTION because the file carries the
+    PostgreSQL Global Development Group copyright preamble; the license text itself is
+    the PostgreSQL License.
