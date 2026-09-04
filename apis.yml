@@ -24,6 +24,17 @@ deliveryModel:
   - repository-unlicensed
   generated: '2026-08-28'
   method: derived
+accessModel:
+  pricing: unknown
+  onboarding: unknown
+  trial: false
+  try_now: false
+  public: false
+  label: Unknown
+  confidence: low
+  source: []
+  generated: '2026-09-02'
+  method: derived
 image: https://avatars.githubusercontent.com/u/98363230?v=4
 url: https://raw.githubusercontent.com/api-evangelist/pgvector/refs/heads/main/apis.yml
 x-type: company
