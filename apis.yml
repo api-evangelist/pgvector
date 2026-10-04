@@ -14,6 +14,10 @@ description: >-
   Postgres driver.
 deliveryModel:
   model: unknown
+  license_evidence:
+    repo: pgvector/pgvector
+    spdx: NOASSERTION
+    stars: 23157
   open_source: unknown
   commercial: true
   callable_host: false
@@ -22,7 +26,7 @@ deliveryModel:
   source:
   - pricing
   - repository-unlicensed
-  generated: '2026-08-28'
+  generated: '2026-09-25'
   method: derived
 accessModel:
   pricing: unknown
@@ -48,12 +52,13 @@ tags:
 - Artificial Intelligence
 - Vector Database
 - Database
-- Open-Source
+- Open Source
 - PostgreSQL
 - Search
 - Embeddings
 - Extensions
 - Company
+- Vector Search
 tags_raw:
 - Artificial Intelligence
 - Vector Databases
@@ -64,6 +69,8 @@ tags_raw:
 - Embeddings
 - Extensions
 - Company
+- Open-Source
+- Vector Search
 apis: []
 x-apis-note: >-
   Deliberately empty. pgvector exposes no HTTP, GraphQL, gRPC or SOAP API and
